@@ -100,7 +100,6 @@ function Login(props) {
 								resetError();
 							},
 						})}
-						// onChange={resetError}
 					/>
 					<p style={{ marginBottom: "10px" }}>
 						Don't have an account yet ?{" "}

@@ -9,13 +9,21 @@ const userApi = createApi({
 			return headers;
 		},
 	}),
-	tagTypes:["Profile"],
+	tagTypes: ["Profile"],
 	endpoints: (builder) => ({
 		currentUserData: builder.query({
 			query: (id) => `/currentuserdata?id=${id}`,
-			providesTags:["Profile"]
+			providesTags: ["Profile"],
+		}),
+		updateUser: builder.mutation({
+			query: (data) => ({
+				url: `/updateUser`,
+				method: "PATCH",
+				body: data,
+			}),
+			invalidatesTags: ["Profile"],
 		}),
 	}),
 });
 export default userApi;
-export const { useCurrentUserDataQuery } = userApi;
+export const { useCurrentUserDataQuery, useUpdateUserMutation } = userApi;
