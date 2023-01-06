@@ -3,8 +3,12 @@ import { Button, Container } from "../ui/components";
 import { useDispatch, useSelector } from "react-redux";
 import Post from "../components/Post";
 import FriendCard from "../components/FriendCard";
+import { BsImageFill } from "react-icons/bs";
+import { nanoid } from "@reduxjs/toolkit";
 import {
+	useCreatePostMutation,
 	useCurrentUserDataQuery,
+	useLoadUserPostsQuery,
 	useUpdateUserMutation,
 } from "../store/userApi";
 import axios from "axios";
@@ -33,10 +37,18 @@ function Profile(props) {
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user.user);
 	const [modal, setModal] = useState(false);
+	const [postImages, setPostImages] = useState([]);
+	const [postText, setPostText] = useState("");
 	axios.defaults.headers.common["Authorization"] = `Bearer ${user.token}`;
 	const { data, isLoading, error } = useCurrentUserDataQuery(user.id);
+	const {
+		data: posts,
+		isLoading: postsLoading,
+		error: postsError,
+	} = useLoadUserPostsQuery();
 	const profileInput = useRef(null);
 	const bannerInput = useRef(null);
+	const postImageInput = useRef(null);
 	const apiUrl = useSelector((state) => state.user.apiUrl);
 
 	const {
@@ -62,6 +74,17 @@ function Profile(props) {
 			dispatch(userApi.util.invalidateTags(["Profile"]));
 		});
 	};
+	const addNewPost = () => {
+		const fd = new FormData();
+		fd.append("text", postText);
+		for (let i = 0; i <= postImages.length - 1; i++) {
+			fd.append("images[]", postImages[i].object);
+		}
+		createUser(fd);
+		setPostImages([]);
+		setPostText("");
+		dispatch(userApi.util.invalidateTags(["Posts"]));
+	};
 	const switchBanner = () => {
 		const fd = new FormData();
 		fd.append("image", bannerInput.current.files[0]);
@@ -71,6 +94,10 @@ function Profile(props) {
 	};
 	const [updateUser, { isSuccess, isLoading: updateLoading, isError }] =
 		useUpdateUserMutation();
+	const [
+		createUser,
+		{ isSuccessCreate, isLoading: updateLoadingCreate, isErrorCreate },
+	] = useCreatePostMutation();
 	const editFormRef = useRef(null);
 	const submitEditProfile = (data) => {
 		updateUser({
@@ -85,9 +112,18 @@ function Profile(props) {
 			}
 		});
 	};
-
+	const appendToLoadedImages = (ev) => {
+		let reader = new FileReader();
+		reader.onload = function (e) {
+			setPostImages((prev) => [
+				...prev,
+				{ id: nanoid(), src: e.target.result, object: ev.target.files[0] },
+			]);
+		};
+		reader.readAsDataURL(ev.target.files[0]);
+	};
 	return (
-		<div>
+		<div className="">
 			<Modal
 				show={modal}
 				setShow={setModal}
@@ -114,7 +150,7 @@ function Profile(props) {
 					/>
 				</form>
 			</Modal>
-			<Container>
+			<Container className="">
 				<input
 					type="file"
 					onChange={() => {
@@ -200,14 +236,71 @@ function Profile(props) {
 							<FriendCard />
 						</div>
 					</div>
-					<div className="w-[60%]">
+					<div className="w-[60%] ">
 						<h1 className="text-4xl mb-4 font-semibold">Posts</h1>
-						<Post />
-						<Post />
-						<Post />
-						<Post />
-						<Post />
-						<Post />
+						<div className="p-3 border-4 border-primary mb-2 shadow-lg">
+							<h2>New Post</h2>
+							<textarea
+								value={postText}
+								onChange={(ev) => {
+									setPostText(ev.target.value);
+								}}
+								placeholder="What's on your mind?"
+								className="w-full rounded-sm outline-none p-4 resize-none h-fit"
+							></textarea>
+							<Input
+								type="file"
+								accept="image/*"
+								className="hidden"
+								ref={postImageInput}
+								onChange={(ev) => {
+									appendToLoadedImages(ev);
+								}}
+							/>
+							<div className="flex flex-wrap gap-3 mb-2">
+								{postImages &&
+									postImages.map((img, i) => {
+										return (
+											<img
+												src={img.src}
+												key={img.src + i}
+												className="w-20 aspect-square object-cover"
+												onClick={(ev) => {
+													setPostImages((prev) => {
+														return prev.filter((el) => el.id !== img.id);
+													});
+												}}
+											/>
+										);
+									})}
+							</div>
+							<span
+								className="inline-block p-2 border-primary border-2 cursor-pointer"
+								onClick={() => {
+									postImageInput.current.click();
+								}}
+							>
+								<BsImageFill />
+							</span>
+							<Button className="block" onClick={addNewPost}>
+								Publish
+							</Button>
+						</div>
+						{posts ? (
+							posts
+								.filter((el, i, self) => {
+									return (
+										i === self.findIndex((element) => element.id === el.id)
+									);
+								})
+								.map((el, i) => {
+									return <Post key={el.id} data={el} allPosts={posts} />;
+								})
+						) : (
+							<div className="p-5 border-4 border-primary shadow-lg rounded-sm">
+								<h2 className="text-center font-semibold">You have no posts! You can publish your first post whenever you are ready!</h2>
+							</div>
+						)}
 					</div>
 				</div>
 			</Container>

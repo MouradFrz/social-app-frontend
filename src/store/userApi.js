@@ -23,7 +23,27 @@ const userApi = createApi({
 			}),
 			invalidatesTags: ["Profile"],
 		}),
+		createPost: builder.mutation({
+			query: (data) => ({
+				url: `/createPost`,
+				method: "POST",
+				body: data,
+			}),
+			invalidatesTags:["Posts"]
+		}),
+		loadUserPosts: builder.query({
+			query:()=>({
+				url:"/loadUserPosts",
+				method:"GET",
+			}),
+			providesTags:["Posts"]
+		})
 	}),
 });
 export default userApi;
-export const { useCurrentUserDataQuery, useUpdateUserMutation } = userApi;
+export const {
+	useCurrentUserDataQuery,
+	useLoadUserPostsQuery,
+	useUpdateUserMutation,
+	useCreatePostMutation,
+} = userApi;
