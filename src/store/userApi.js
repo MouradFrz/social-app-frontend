@@ -29,14 +29,60 @@ const userApi = createApi({
 				method: "POST",
 				body: data,
 			}),
-			invalidatesTags:["Posts"]
+			invalidatesTags: ["Posts"],
 		}),
 		loadUserPosts: builder.query({
-			query:()=>({
-				url:"/loadUserPosts",
-				method:"GET",
+			query: () => ({
+				url: "/loadUserPosts",
+				method: "GET",
 			}),
-			providesTags:["Posts"]
+			providesTags: ["Posts"],
+		}),
+		deletePost: builder.mutation({
+			query: (postId) => ({
+				url: `/deletePost`,
+				method: "POST",
+				body: { postId },
+			}),
+			invalidatesTags: ["Posts"],
+		}),
+		userLikes: builder.query({
+			query: () => "/getUserLikes",
+			providesTags: ["UserLikes"],
+		}),
+		likePost: builder.mutation({
+			query: (postId) => ({
+				url: "/likePost",
+				method: "POST",
+				body: { postId },
+			}),
+			invalidatesTags: ["UserLikes"],
+			onQueryStarted(postId, { dispatch, queryFulfilled }) {
+				const patchResult = dispatch(
+					userApi.util.updateQueryData("userLikes", undefined, (likes) => {
+						likes.push(postId);
+					})
+				);
+				queryFulfilled.catch(dispatch(userApi.util.invalidateTags(["Profile"])));
+			},
+		}),
+		unlikePost:builder.mutation({
+			query:(postId)=>({
+				url:"/unlikePost",
+				method:"POST",
+				body:{postId},
+			}),
+			invalidatesTags: ["UserLikes"],
+			onQueryStarted(postId,{dispatch,queryFulfilled}){
+				const patchResult = dispatch(
+					userApi.util.updateQueryData("userLikes", undefined, (likes) => {
+						const indexOfNeededId = likes.indexOf(postId)
+						likes.splice(indexOfNeededId,1);
+					})
+				);
+				queryFulfilled.catch(dispatch(userApi.util.invalidateTags(["Profile"])));
+			}
+
 		})
 	}),
 });
@@ -46,4 +92,8 @@ export const {
 	useLoadUserPostsQuery,
 	useUpdateUserMutation,
 	useCreatePostMutation,
+	useDeletePostMutation,
+	useUserLikesQuery,
+	useLikePostMutation,
+	useUnlikePostMutation,
 } = userApi;

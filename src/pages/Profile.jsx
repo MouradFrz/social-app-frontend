@@ -10,6 +10,7 @@ import {
 	useCurrentUserDataQuery,
 	useLoadUserPostsQuery,
 	useUpdateUserMutation,
+	useUserLikesQuery,
 } from "../store/userApi";
 import axios from "axios";
 import { Input } from "../ui/components";
@@ -46,11 +47,11 @@ function Profile(props) {
 		isLoading: postsLoading,
 		error: postsError,
 	} = useLoadUserPostsQuery();
+	const { data: userLikes } = useUserLikesQuery();
 	const profileInput = useRef(null);
 	const bannerInput = useRef(null);
 	const postImageInput = useRef(null);
 	const apiUrl = useSelector((state) => state.user.apiUrl);
-
 	const {
 		register,
 		handleSubmit,
@@ -286,7 +287,7 @@ function Profile(props) {
 								Publish
 							</Button>
 						</div>
-						{posts ? (
+						{posts && posts.length ? (
 							posts
 								.filter((el, i, self) => {
 									return (
@@ -294,11 +295,14 @@ function Profile(props) {
 									);
 								})
 								.map((el, i) => {
-									return <Post key={el.id} data={el} allPosts={posts} />;
+									return <Post key={el.id} data={el} allPosts={posts} likes={userLikes} />;
 								})
 						) : (
 							<div className="p-5 border-4 border-primary shadow-lg rounded-sm">
-								<h2 className="text-center font-semibold">You have no posts! You can publish your first post whenever you are ready!</h2>
+								<h2 className="text-center font-semibold">
+									You have no posts! You can publish your first post whenever
+									you are ready!
+								</h2>
 							</div>
 						)}
 					</div>

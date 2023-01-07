@@ -1,22 +1,51 @@
 import React, { useState } from "react";
 import colors from "../ui/colors";
 import moment from "moment";
+import Dropdown from "./Dropdown";
 import {
 	AiOutlineLike,
 	AiFillLeftCircle,
 	AiFillLike,
 	AiFillRightCircle,
 } from "react-icons/ai";
+import { BsThreeDots } from "react-icons/bs";
 import { CgComment } from "react-icons/cg";
+import { AiFillDelete } from "react-icons/ai";
 import { useSelector } from "react-redux";
-function Post({ data, allPosts }) {
+import {
+	useDeletePostMutation,
+	useLikePostMutation,
+	useUnlikePostMutation,
+} from "../store/userApi";
+function Post({ data, allPosts, likes }) {
 	const apiUrl = useSelector((state) => state.user.apiUrl);
 	const [currentImageIndex, setCurrentImageIndex] = useState(0);
 	const myImages = allPosts
 		.filter((el) => el.id === data.id)
 		.map((el) => el.path);
+	const [deletePost] = useDeletePostMutation();
+	const [likePost] = useLikePostMutation();
+	const [unlikePost] = useUnlikePostMutation();
+	const ActionsList = [
+		{
+			title: (
+				<span className="flex gap-2 items-center">
+					<AiFillDelete />
+					Delete this post
+				</span>
+			),
+			onClick: () => {
+				deletePost(data.id);
+			},
+		},
+	];
 	return (
-		<div className="mb-2 border-primary p-5 border-4 bg-darkgrey/20 shadow-lg rounded-lg">
+		<div className="mb-2 border-primary relative p-5 border-4 bg-darkgrey/20 shadow-lg rounded-lg">
+			<Dropdown
+				title={<BsThreeDots />}
+				list={ActionsList}
+				className="top-5  right-5 cursor-pointer"
+			></Dropdown>
 			<div className="flex">
 				<img
 					className="w-16 h-fit aspect-square rounded-full"
@@ -40,8 +69,8 @@ function Post({ data, allPosts }) {
 				<p>{data.text}</p>
 			</div>
 			{data.path && (
-				<div className="relative">
-					<span className="absolute right-4 top-4 bg-black inline-block text-white px-3 rounded-xl">
+				<div className="relative bg-white/50">
+					<span className="absolute right-4 top-4 bg-black inline-block text-white z-20 px-3 rounded-xl">
 						{currentImageIndex + 1}/{myImages.length}
 					</span>
 					<img
@@ -79,7 +108,35 @@ function Post({ data, allPosts }) {
 			)}
 			<div className="flex gap-4 mt-4">
 				<span className="flex items-center gap-1 font-semibold">
-					<AiOutlineLike /> <p>Like</p>
+					{likes && !likes.includes(data.id) ? (
+						<button
+							className="flex gap-1 items-center"
+							onClick={() => {
+								likePost(data.id);
+							}}
+						>
+							<AiOutlineLike /> <p>Like</p>{" "}
+						</button>
+					) : (
+						<>
+							{/* <button
+								className="flex gap-1 items-center"
+								onClick={() => {
+									likePost(data.id);
+								}}
+							>
+								<AiOutlineLike /> <p>Like</p>{" "}
+							</button> */}
+							<button
+								className="flex gap-1 items-center"
+								onClick={() => {
+									unlikePost(data.id);
+								}}
+							>
+								<AiFillLike /> <p>Unlike</p>{" "}
+							</button>
+						</>
+					)}
 				</span>
 				<span className="flex items-center gap-1 font-semibold">
 					<CgComment /> <p>Comments</p>
