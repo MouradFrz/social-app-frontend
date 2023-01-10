@@ -17,7 +17,7 @@ import {
 	useLikePostMutation,
 	useUnlikePostMutation,
 } from "../store/userApi";
-function Post({ data, allPosts, likes, likeCount }) {
+function Post({ data, allPosts, likes, likeCount, setPostDetails }) {
 	const apiUrl = useSelector((state) => state.user.apiUrl);
 	const [currentImageIndex, setCurrentImageIndex] = useState(0);
 	const myImages = allPosts
@@ -48,6 +48,7 @@ function Post({ data, allPosts, likes, likeCount }) {
 			></Dropdown>
 			<div className="flex">
 				<img
+					
 					className="w-16 h-fit aspect-square rounded-full"
 					src={
 						data.pfpurl
@@ -74,9 +75,18 @@ function Post({ data, allPosts, likes, likeCount }) {
 						{currentImageIndex + 1}/{myImages.length}
 					</span>
 					<img
-						className="w-full max-h-[1000px] object-cover"
+						className="w-full max-h-[1000px]  object-cover"
 						src={`${apiUrl}/post-images/${myImages[currentImageIndex]}`}
 						alt=""
+						onClick={()=>{
+							setPostDetails({
+								show:true,
+								data,
+								likeCount,
+								likes,
+								myImages
+							})
+						}}
 					/>
 					{myImages.length > 1 ? (
 						<>
@@ -118,22 +128,31 @@ function Post({ data, allPosts, likes, likeCount }) {
 							<AiOutlineLike /> <p>Like</p>{" "}
 						</button>
 					) : (
-						<>
-							<button
-								className="flex gap-1 items-center"
-								onClick={() => {
-									unlikePost(data.id);
-								}}
-							>
-								<AiFillLike /> <p>Unlike</p>{" "}
-							</button>
-						</>
+						<button
+							className="flex gap-1 items-center"
+							onClick={() => {
+								unlikePost(data.id);
+							}}
+						>
+							<AiFillLike /> <p>Unlike</p>{" "}
+						</button>
 					)}
 					{likeCount}
 				</span>
-				<span className="flex items-center gap-1 font-semibold">
+				<button
+					className="flex items-center gap-1 font-semibold"
+					onClick={() => {
+						setPostDetails({
+							show:true,
+							data,
+							likeCount,
+							likes,
+							myImages
+						});
+					}}
+				>
 					<CgComment /> <p>Comments</p>
-				</span>
+				</button>
 			</div>
 		</div>
 	);

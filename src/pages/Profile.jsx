@@ -21,6 +21,7 @@ import Modal from "../components/Modal";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import PostDetails from "../components/PostDetails";
 const schema = yup.object().shape({
 	firstName: yup
 		.string()
@@ -43,6 +44,12 @@ function Profile(props) {
 	const [postText, setPostText] = useState("");
 	axios.defaults.headers.common["Authorization"] = `Bearer ${user.token}`;
 	const { data, isLoading, error } = useCurrentUserDataQuery(user.id);
+	const [postDetails, setPostDetails] = useState({
+		show: false,
+		likes: [],
+		likeCount: 0,
+		data: null,
+	});
 
 	const {
 		data: posts,
@@ -53,7 +60,13 @@ function Profile(props) {
 		data: likes,
 		isLoading: likesLoading,
 		error: likesError,
-	} = useLoadLikesQuery(posts?.map((el) => el.id));
+	} = useLoadLikesQuery(
+		posts
+			?.map((el) => el.id)
+			.filter(
+				(item, index) => posts?.map((el) => el.id).indexOf(item) === index
+			)
+	);
 	const { data: userLikes } = useUserLikesQuery();
 	const profileInput = useRef(null);
 	const bannerInput = useRef(null);
@@ -131,7 +144,7 @@ function Profile(props) {
 		reader.readAsDataURL(ev.target.files[0]);
 	};
 	return (
-		<div className="">
+		<div className="relative">
 			<Modal
 				show={modal}
 				setShow={setModal}
@@ -158,6 +171,7 @@ function Profile(props) {
 					/>
 				</form>
 			</Modal>
+			<PostDetails postDetails={postDetails} setPostDetails={setPostDetails} />
 			<Container className="">
 				<input
 					type="file"
@@ -307,10 +321,13 @@ function Profile(props) {
 											key={el.id}
 											data={el}
 											allPosts={posts}
+											setPostDetails={setPostDetails}
 											likes={userLikes}
 											likeCount={
 												likes?.map((like) => like.postid).includes(el.id)
-													? likes[likes.map((like)=>like.postid).indexOf(el.id)].likecount
+													? likes[
+															likes.map((like) => like.postid).indexOf(el.id)
+													  ].likecount
 													: 0
 											}
 										/>
