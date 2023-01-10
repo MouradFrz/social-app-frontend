@@ -63,27 +63,34 @@ const userApi = createApi({
 						likes.push(postId);
 					})
 				);
-				queryFulfilled.catch(dispatch(userApi.util.invalidateTags(["Profile"])));
+				queryFulfilled.catch(
+					dispatch(userApi.util.invalidateTags(["Profile"]))
+				);
 			},
 		}),
-		unlikePost:builder.mutation({
-			query:(postId)=>({
-				url:"/unlikePost",
-				method:"POST",
-				body:{postId},
+		unlikePost: builder.mutation({
+			query: (postId) => ({
+				url: "/unlikePost",
+				method: "POST",
+				body: { postId },
 			}),
 			invalidatesTags: ["UserLikes"],
-			onQueryStarted(postId,{dispatch,queryFulfilled}){
+			onQueryStarted(postId, { dispatch, queryFulfilled }) {
 				const patchResult = dispatch(
 					userApi.util.updateQueryData("userLikes", undefined, (likes) => {
-						const indexOfNeededId = likes.indexOf(postId)
-						likes.splice(indexOfNeededId,1);
+						const indexOfNeededId = likes.indexOf(postId);
+						likes.splice(indexOfNeededId, 1);
 					})
 				);
-				queryFulfilled.catch(dispatch(userApi.util.invalidateTags(["Profile"])));
-			}
-
-		})
+				queryFulfilled.catch(
+					dispatch(userApi.util.invalidateTags(["Profile"]))
+				);
+			},
+		}),
+		loadLikes: builder.query({
+			query: (idList) => `/loadLikes?list=${idList}`,
+			providesTags: ["UserLikes"],
+		}),
 	}),
 });
 export default userApi;
@@ -96,4 +103,5 @@ export const {
 	useUserLikesQuery,
 	useLikePostMutation,
 	useUnlikePostMutation,
+	useLoadLikesQuery,
 } = userApi;

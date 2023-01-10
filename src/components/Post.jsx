@@ -17,7 +17,7 @@ import {
 	useLikePostMutation,
 	useUnlikePostMutation,
 } from "../store/userApi";
-function Post({ data, allPosts, likes }) {
+function Post({ data, allPosts, likes, likeCount }) {
 	const apiUrl = useSelector((state) => state.user.apiUrl);
 	const [currentImageIndex, setCurrentImageIndex] = useState(0);
 	const myImages = allPosts
@@ -119,14 +119,6 @@ function Post({ data, allPosts, likes }) {
 						</button>
 					) : (
 						<>
-							{/* <button
-								className="flex gap-1 items-center"
-								onClick={() => {
-									likePost(data.id);
-								}}
-							>
-								<AiOutlineLike /> <p>Like</p>{" "}
-							</button> */}
 							<button
 								className="flex gap-1 items-center"
 								onClick={() => {
@@ -137,6 +129,7 @@ function Post({ data, allPosts, likes }) {
 							</button>
 						</>
 					)}
+					{likeCount}
 				</span>
 				<span className="flex items-center gap-1 font-semibold">
 					<CgComment /> <p>Comments</p>

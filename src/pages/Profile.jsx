@@ -11,6 +11,7 @@ import {
 	useLoadUserPostsQuery,
 	useUpdateUserMutation,
 	useUserLikesQuery,
+	useLoadLikesQuery,
 } from "../store/userApi";
 import axios from "axios";
 import { Input } from "../ui/components";
@@ -42,11 +43,17 @@ function Profile(props) {
 	const [postText, setPostText] = useState("");
 	axios.defaults.headers.common["Authorization"] = `Bearer ${user.token}`;
 	const { data, isLoading, error } = useCurrentUserDataQuery(user.id);
+
 	const {
 		data: posts,
 		isLoading: postsLoading,
 		error: postsError,
 	} = useLoadUserPostsQuery();
+	const {
+		data: likes,
+		isLoading: likesLoading,
+		error: likesError,
+	} = useLoadLikesQuery(posts?.map((el) => el.id));
 	const { data: userLikes } = useUserLikesQuery();
 	const profileInput = useRef(null);
 	const bannerInput = useRef(null);
@@ -295,7 +302,19 @@ function Profile(props) {
 									);
 								})
 								.map((el, i) => {
-									return <Post key={el.id} data={el} allPosts={posts} likes={userLikes} />;
+									return (
+										<Post
+											key={el.id}
+											data={el}
+											allPosts={posts}
+											likes={userLikes}
+											likeCount={
+												likes?.map((like) => like.postid).includes(el.id)
+													? likes[likes.map((like)=>like.postid).indexOf(el.id)].likecount
+													: 0
+											}
+										/>
+									);
 								})
 						) : (
 							<div className="p-5 border-4 border-primary shadow-lg rounded-sm">
