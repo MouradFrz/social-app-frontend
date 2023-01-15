@@ -9,7 +9,7 @@ const userApi = createApi({
 			return headers;
 		},
 	}),
-	tagTypes: ["Profile"],
+	tagTypes: ["Profile", "Posts", "UserLikes"],
 	endpoints: (builder) => ({
 		currentUserData: builder.query({
 			query: (id) => `/currentuserdata?id=${id}`,
@@ -50,46 +50,60 @@ const userApi = createApi({
 			query: () => "/getUserLikes",
 			providesTags: ["UserLikes"],
 		}),
+		loadLikes: builder.query({
+			query: (idList) => `/loadLikes?list=${idList}`,
+			providesTags: ["UserLikes"],
+		}),
 		likePost: builder.mutation({
-			query: (postId) => ({
+			query: ({ postId }) => ({
 				url: "/likePost",
 				method: "POST",
 				body: { postId },
 			}),
 			invalidatesTags: ["UserLikes"],
-			onQueryStarted(postId, { dispatch, queryFulfilled }) {
-				const patchResult = dispatch(
+			onQueryStarted({ postId, posts }, { dispatch, queryFulfilled }) {
+				dispatch(
 					userApi.util.updateQueryData("userLikes", undefined, (likes) => {
 						likes.push(postId);
 					})
 				);
-				queryFulfilled.catch(
-					dispatch(userApi.util.invalidateTags(["Profile"]))
+				dispatch(
+					userApi.util.updateQueryData("loadLikes", posts, (likesList) => {
+						const indexToBeChanged = likesList
+							.map((el) => el.postid)
+							.indexOf(postId);
+						indexToBeChanged !== -1
+							? likesList[indexToBeChanged].likecount++
+							: likesList.push({ likecount: 1, postid: postId });
+					})
 				);
 			},
 		}),
 		unlikePost: builder.mutation({
-			query: (postId) => ({
+			query: ({ postId }) => ({
 				url: "/unlikePost",
 				method: "POST",
 				body: { postId },
 			}),
 			invalidatesTags: ["UserLikes"],
-			onQueryStarted(postId, { dispatch, queryFulfilled }) {
-				const patchResult = dispatch(
+			onQueryStarted({ postId, posts }, { dispatch, queryFulfilled }) {
+				dispatch(
 					userApi.util.updateQueryData("userLikes", undefined, (likes) => {
 						const indexOfNeededId = likes.indexOf(postId);
 						likes.splice(indexOfNeededId, 1);
 					})
 				);
-				queryFulfilled.catch(
-					dispatch(userApi.util.invalidateTags(["Profile"]))
+				dispatch(
+					userApi.util.updateQueryData("loadLikes", posts, (likesList) => {
+						const indexOfNeededId = likesList
+							.map((el) => el.postid)
+							.indexOf(postId);
+						likesList[indexOfNeededId].likecount === 1
+							? likesList.splice(indexOfNeededId, 1)
+							: likesList[indexOfNeededId].likecount--;
+					})
 				);
 			},
-		}),
-		loadLikes: builder.query({
-			query: (idList) => `/loadLikes?list=${idList}`,
-			providesTags: ["UserLikes"],
 		}),
 	}),
 });

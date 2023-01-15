@@ -48,7 +48,6 @@ function Post({ data, allPosts, likes, likeCount, setPostDetails }) {
 			></Dropdown>
 			<div className="flex">
 				<img
-					
 					className="w-16 h-fit aspect-square rounded-full"
 					src={
 						data.pfpurl
@@ -78,14 +77,13 @@ function Post({ data, allPosts, likes, likeCount, setPostDetails }) {
 						className="w-full max-h-[1000px]  object-cover"
 						src={`${apiUrl}/post-images/${myImages[currentImageIndex]}`}
 						alt=""
-						onClick={()=>{
+						onClick={() => {
 							setPostDetails({
-								show:true,
+								show: true,
 								data,
 								likeCount,
-								likes,
-								myImages
-							})
+								myImages,
+							});
 						}}
 					/>
 					{myImages.length > 1 ? (
@@ -122,7 +120,15 @@ function Post({ data, allPosts, likes, likeCount, setPostDetails }) {
 						<button
 							className="flex gap-1 items-center"
 							onClick={() => {
-								likePost(data.id);
+								likePost({
+									postId: data.id,
+									posts: allPosts
+										?.map((el) => el.id)
+										.filter(
+											(item, index) =>
+												allPosts?.map((el) => el.id).indexOf(item) === index
+										),
+								});
 							}}
 						>
 							<AiOutlineLike /> <p>Like</p>{" "}
@@ -131,7 +137,15 @@ function Post({ data, allPosts, likes, likeCount, setPostDetails }) {
 						<button
 							className="flex gap-1 items-center"
 							onClick={() => {
-								unlikePost(data.id);
+								unlikePost({
+									postId: data.id,
+									posts: allPosts
+										?.map((el) => el.id)
+										.filter(
+											(item, index) =>
+												allPosts?.map((el) => el.id).indexOf(item) === index
+										),
+								});
 							}}
 						>
 							<AiFillLike /> <p>Unlike</p>{" "}
@@ -143,11 +157,10 @@ function Post({ data, allPosts, likes, likeCount, setPostDetails }) {
 					className="flex items-center gap-1 font-semibold"
 					onClick={() => {
 						setPostDetails({
-							show:true,
+							show: true,
 							data,
 							likeCount,
-							likes,
-							myImages
+							myImages,
 						});
 					}}
 				>

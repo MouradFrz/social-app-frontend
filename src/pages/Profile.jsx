@@ -46,8 +46,6 @@ function Profile(props) {
 	const { data, isLoading, error } = useCurrentUserDataQuery(user.id);
 	const [postDetails, setPostDetails] = useState({
 		show: false,
-		likes: [],
-		likeCount: 0,
 		data: null,
 	});
 
@@ -67,6 +65,7 @@ function Profile(props) {
 				(item, index) => posts?.map((el) => el.id).indexOf(item) === index
 			)
 	);
+
 	const { data: userLikes } = useUserLikesQuery();
 	const profileInput = useRef(null);
 	const bannerInput = useRef(null);
@@ -127,7 +126,6 @@ function Profile(props) {
 			email: data.email,
 			bio: data.bio,
 		}).then((res) => {
-			console.log(res);
 			if (res.data.success) {
 				setModal(false);
 			}
@@ -171,7 +169,18 @@ function Profile(props) {
 					/>
 				</form>
 			</Modal>
-			<PostDetails postDetails={postDetails} setPostDetails={setPostDetails} />
+			<PostDetails
+				postDetails={postDetails}
+				likes={userLikes}
+				setPostDetails={setPostDetails}
+				likeCount={
+					likes?.filter((el) => el.postid == postDetails?.data?.id)[0]
+						? likes?.filter((el) => el.postid == postDetails?.data?.id)[0]
+								.likecount
+						: 0
+				}
+				allPosts={posts}
+			/>
 			<Container className="">
 				<input
 					type="file"
