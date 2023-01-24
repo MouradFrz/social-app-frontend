@@ -1,6 +1,6 @@
-import { fetchBaseQuery, createApi } from "@reduxjs/toolkit/dist/query/react";
-
+import { fetchBaseQuery, createApi } from "@reduxjs/toolkit/query/react";
 const commentApi = createApi({
+	reducerPath: "commentApi",
 	baseQuery: fetchBaseQuery({
 		baseUrl: "http://localhost:3000",
 		prepareHeaders: (headers, { getState }) => {

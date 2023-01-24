@@ -17,7 +17,7 @@ import {
 	useLikePostMutation,
 	useUnlikePostMutation,
 } from "../store/userApi";
-function Post({ data, allPosts, likes, likeCount, setPostDetails }) {
+function Post({ data, allPosts, likes, likeCount, setPostDetails, myProfile }) {
 	const apiUrl = useSelector((state) => state.user.apiUrl);
 	const [currentImageIndex, setCurrentImageIndex] = useState(0);
 	const myImages = allPosts
@@ -41,11 +41,13 @@ function Post({ data, allPosts, likes, likeCount, setPostDetails }) {
 	];
 	return (
 		<div className="mb-2 border-primary relative p-5 border-4 bg-darkgrey/20 shadow-lg rounded-lg">
-			<Dropdown
-				title={<BsThreeDots />}
-				list={ActionsList}
-				className="top-5  right-5 cursor-pointer"
-			></Dropdown>
+			{myProfile && (
+				<Dropdown
+					title={<BsThreeDots />}
+					list={ActionsList}
+					className="top-5  right-5 cursor-pointer"
+				></Dropdown>
+			)}
 			<div className="flex">
 				<img
 					className="w-16 h-fit aspect-square rounded-full"

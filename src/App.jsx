@@ -27,7 +27,7 @@ function App() {
 			element: guestRoute(Register, token),
 		},
 		{
-			path: "/profile",
+			path: "/profile/:profileId",
 			element: protectedRoute(Profile, token),
 		},
 	]);

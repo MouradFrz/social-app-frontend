@@ -1,5 +1,4 @@
 import { fetchBaseQuery, createApi } from "@reduxjs/toolkit/query/react";
-
 const userApi = createApi({
 	reducerPath: "userApi",
 	baseQuery: fetchBaseQuery({
@@ -11,8 +10,8 @@ const userApi = createApi({
 	}),
 	tagTypes: ["Profile", "Posts", "UserLikes"],
 	endpoints: (builder) => ({
-		currentUserData: builder.query({
-			query: (id) => `/currentuserdata?id=${id}`,
+		userData: builder.query({
+			query: (id) => `/userdata?id=${id}`,
 			providesTags: ["Profile"],
 		}),
 		updateUser: builder.mutation({
@@ -32,10 +31,22 @@ const userApi = createApi({
 			invalidatesTags: ["Posts"],
 		}),
 		loadUserPosts: builder.query({
-			query: () => ({
-				url: "/loadUserPosts",
+			query: ({ id, page }) => ({
+				url: `/loadUserPosts?userid=${id}&page=${page}`,
 				method: "GET",
 			}),
+			// serializeQueryArgs: ({ endpointName,queryArgs }) => {
+			// 	return endpointName+queryArgs.id;
+			// },
+			// merge: (currentCache, newItems) => {
+			// 	currentCache.push(...newItems);
+			// },
+			// // Refetch when the page arg changes
+			// forceRefetch({ currentArg, previousArg }) {
+			// 	const reload = previousArg ? currentArg.page !== previousArg.page : true
+			// 	return reload
+			// },
+
 			providesTags: ["Posts"],
 		}),
 		deletePost: builder.mutation({
@@ -109,8 +120,9 @@ const userApi = createApi({
 });
 export default userApi;
 export const {
-	useCurrentUserDataQuery,
+	useUserDataQuery,
 	useLoadUserPostsQuery,
+	useLazyLoadUserPostsQuery,
 	useUpdateUserMutation,
 	useCreatePostMutation,
 	useDeletePostMutation,
