@@ -8,7 +8,7 @@ const userApi = createApi({
 			return headers;
 		},
 	}),
-	tagTypes: ["Profile", "Posts", "UserLikes"],
+	tagTypes: ["Profile", "Posts", "UserLikes", "Search"],
 	endpoints: (builder) => ({
 		userData: builder.query({
 			query: (id) => `/userdata?id=${id}`,
@@ -116,6 +116,10 @@ const userApi = createApi({
 				);
 			},
 		}),
+		searchUsers: builder.query({
+			query: (keyword) => `/searchUsers?keyword=${keyword}`,
+			providesTags: ["Search"],
+		}),
 	}),
 });
 export default userApi;
@@ -123,6 +127,7 @@ export const {
 	useUserDataQuery,
 	useLoadUserPostsQuery,
 	useLazyLoadUserPostsQuery,
+	useLazySearchUsersQuery,
 	useUpdateUserMutation,
 	useCreatePostMutation,
 	useDeletePostMutation,

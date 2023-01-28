@@ -5,10 +5,10 @@ import Post from "../components/Post";
 import FriendCard from "../components/FriendCard";
 import { BsImageFill } from "react-icons/bs";
 import { nanoid } from "@reduxjs/toolkit";
+import Navbar from "../components/Navbar";
 import {
 	useCreatePostMutation,
 	useUserDataQuery,
-	useLoadUserPostsQuery,
 	useLazyLoadUserPostsQuery,
 	useUpdateUserMutation,
 	useUserLikesQuery,
@@ -35,6 +35,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import PostDetails from "../components/PostDetails";
 import { useParams } from "react-router-dom";
+import Footer from "../components/Footer";
 const schema = yup.object().shape({
 	firstName: yup
 		.string()
@@ -205,13 +206,7 @@ function Profile(props) {
 	};
 	return (
 		<div className="relative">
-			<Button
-				onClick={() => {
-					setPage((prev) => prev + 1);
-				}}
-			>
-				NewPost {page}
-			</Button>
+			<Navbar/>
 			{myProfile && (
 				<Modal
 					show={modal}
@@ -482,7 +477,7 @@ function Profile(props) {
 						)}
 					</div>
 				</div>
-				<div className="w-full h-[600px]"></div>
+				<Footer/>
 			</Container>
 		</div>
 	);

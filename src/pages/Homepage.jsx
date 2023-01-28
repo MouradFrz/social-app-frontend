@@ -7,20 +7,6 @@ function Homepage(props) {
 	const dispatch = useDispatch();
 	const userData = useSelector((state) => state.user.user);
 	const apiUrl = useSelector((state) => state.user.apiUrl);
-	function checkValidity() {
-		axios
-			.post(`${apiUrl}authornot`, null, {
-				headers: {
-					Authorization: `Bearer ${userData.token}`,
-					"Content-Type": "application/json",
-				},
-			})
-			.then((res) => {
-				console.log(res.data);
-			})
-			.catch((err)=>{
-			});
-	}
 
 	return (
 		<div>
@@ -32,13 +18,10 @@ function Homepage(props) {
 			<p>{userData.name}</p>
 			<p>Homepage</p>
 			<button
-				onClick={() => {
-					dispatch(logout());
-				}}
+
 			>
 				Logout
 			</button>
-			<button onClick={checkValidity}>get token information</button>
 		</div>
 	);
 }
