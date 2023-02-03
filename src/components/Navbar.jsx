@@ -3,7 +3,7 @@ import { Container, Input } from "../ui/components";
 import { useUserDataQuery } from "../store/userApi";
 import { useSelector, useDispatch } from "react-redux";
 import { IoMdArrowDropdown } from "react-icons/io";
-import { BiSearch } from "react-icons/bi";
+import RequestsList from './RequestsList'
 import { FiLogOut } from "react-icons/fi";
 import { ImProfile } from "react-icons/im";
 import { logout } from "../store/userSlice";
@@ -40,11 +40,15 @@ function Navbar(props) {
 		<div>
 			<Container className="flex items-center justify-between fixed z-30 bg-secondary left-[50%] translate-x-[-50%]">
 				<div>
-					<h1 className="font-bold text-2xl ml-10 py-5">Socialz</h1>
+					<Link className="font-bold text-2xl ml-10 inline-block py-5" to="/">
+						Socialz
+					</Link>
 				</div>
-				<SearchBar/>
+				<SearchBar />
+
 				{data && (
-					<div>
+					<div className="flex gap-5 items-center">
+						<RequestsList/>
 						<Dropdown
 							title={
 								<div className="flex gap-4 items-center">
@@ -60,7 +64,7 @@ function Navbar(props) {
 								</div>
 							}
 							list={ActionList}
-							className="relative "
+							className="relative"
 						></Dropdown>
 					</div>
 				)}

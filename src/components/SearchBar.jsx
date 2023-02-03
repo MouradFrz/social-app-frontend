@@ -32,15 +32,21 @@ function SearchBar(props) {
 				style={{ marginBottom: 0 }}
 				type="text"
 				placeholder="Search ...."
-				className="w-[100%]"
+				className="w-[100%] search-bar-input"
 				value={searchText}
 				onChange={(ev) => {
 					setSearchText(ev.target.value);
 				}}
+				onFocus={(ev)=>{
+
+				}}
+				onBlur={(ev)=>{
+
+				}}
 			/>
 			{searchText.length >= 2 &&
 				(isFetching || data === undefined ? (
-					<div className="absolute bg-primary w-full flex justify-center">
+					<div className="absolute bg-primary w-full flex justify-center search-bar-hides ">
 						<ProgressBar
 						  borderColor = '#19a32d'
 						  height="80px"
@@ -48,7 +54,7 @@ function SearchBar(props) {
 						  
 					</div>
 				) : (
-					<ul className="bg-primary absolute top-[100%] w-full max-h-[400px] overflow-y-scroll">
+					<ul className="bg-primary absolute top-[100%] w-full max-h-[400px] overflow-y-scroll search-bar-hides flex flex-col">
 						{data?.length ? (
 							data.map((el) => (
 								<Link
@@ -57,6 +63,7 @@ function SearchBar(props) {
 									onClick={()=>{
 										setSearchText("")
 									}}
+									key={el.id}
 								>
 									<img
 										src={
@@ -75,7 +82,10 @@ function SearchBar(props) {
 								</Link>
 							))
 						) : (
-							<h1 className="p-5">No users found!</h1>
+							<div>
+								<h1 className="p-5">No users found!</h1>
+							</div>
+							
 						)}
 					</ul>
 				))}

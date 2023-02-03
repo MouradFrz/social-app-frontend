@@ -3,9 +3,8 @@ import { Button, Container } from "../ui/components";
 import { useDispatch, useSelector } from "react-redux";
 import Post from "../components/Post";
 import FriendCard from "../components/FriendCard";
-import { BsImageFill } from "react-icons/bs";
-import { nanoid } from "@reduxjs/toolkit";
 import Navbar from "../components/Navbar";
+import PostForm from "../components/PostForm";
 import {
 	useCreatePostMutation,
 	useUserDataQuery,
@@ -56,8 +55,6 @@ function Profile(props) {
 	//States
 	const [modal, setModal] = useState(false);
 	const [page, setPage] = useState(1);
-	const [postImages, setPostImages] = useState([]);
-	const [postText, setPostText] = useState("");
 	const [loadingMore, setLoadingMore] = useState(false);
 	const [postDetails, setPostDetails] = useState({
 		show: false,
@@ -70,18 +67,13 @@ function Profile(props) {
 	const [declineFriendRequest] = useDeclineFriendRequestMutation();
 	const [acceptFriendRequest] = useAcceptFriendRequestMutation();
 	const [updateUser] = useUpdateUserMutation();
-	const [createUser] = useCreatePostMutation();
 	//Data fetching
 	const { data: friends } = useLoadFriendsQuery(profileId);
 	const { data: loggedInFriendList } = useUserFriendListQuery();
 	const { data: sentRequests } = useSentRequestsQuery();
 	const { data: receivedRequests } = useReceivedRequestsQuery();
 	const { data, isLoading, error } = useUserDataQuery(profileId);
-	// const {
-	// 	data: posts,
-	// 	isFetching: postsLoading,
-	// 	error: postsError,
-	// } = useLoadUserPostsQuery({ id: profileId, page: page });
+
 	const [reloadPosts, { data: posts }] = useLazyLoadUserPostsQuery();
 	const {
 		data: likes,
@@ -108,7 +100,6 @@ function Profile(props) {
 	const editFormRef = useRef(null);
 	const profileInput = useRef(null);
 	const bannerInput = useRef(null);
-	const postImageInput = useRef(null);
 	const postsContainer = useRef(null);
 	//Api Url from the store
 	const apiUrl = useSelector((state) => state.user.apiUrl);
@@ -130,7 +121,7 @@ function Profile(props) {
 	}, [data]);
 	useEffect(() => {
 		reloadPosts({ id: profileId, page: page });
-	}, []);
+	}, [profileId]);
 	useEffect(() => {
 		const onScroll = () => {
 			if (
@@ -163,17 +154,6 @@ function Profile(props) {
 			dispatch(userApi.util.invalidateTags(["Profile"]));
 		});
 	};
-	const addNewPost = () => {
-		const fd = new FormData();
-		fd.append("text", postText);
-		for (let i = 0; i <= postImages.length - 1; i++) {
-			fd.append("images[]", postImages[i].object);
-		}
-		createUser(fd);
-		setPostImages([]);
-		setPostText("");
-		dispatch(userApi.util.invalidateTags(["Posts"]));
-	};
 	const switchBanner = () => {
 		const fd = new FormData();
 		fd.append("image", bannerInput.current.files[0]);
@@ -194,19 +174,9 @@ function Profile(props) {
 			}
 		});
 	};
-	const appendToLoadedImages = (ev) => {
-		let reader = new FileReader();
-		reader.onload = function (e) {
-			setPostImages((prev) => [
-				...prev,
-				{ id: nanoid(), src: e.target.result, object: ev.target.files[0] },
-			]);
-		};
-		reader.readAsDataURL(ev.target.files[0]);
-	};
 	return (
 		<div className="relative">
-			<Navbar/>
+			<Navbar />
 			{myProfile && (
 				<Modal
 					show={modal}
@@ -391,56 +361,7 @@ function Profile(props) {
 					</div>
 					<div className="w-[60%] h-fit-content" ref={postsContainer}>
 						<h1 className="text-4xl mb-4 font-semibold">Posts</h1>
-						{myProfile && (
-							<div className="p-3 border-4 border-primary mb-2 shadow-lg">
-								<h2>New Post</h2>
-								<textarea
-									value={postText}
-									onChange={(ev) => {
-										setPostText(ev.target.value);
-									}}
-									placeholder="What's on your mind?"
-									className="w-full rounded-sm outline-none p-4 resize-none h-fit"
-								></textarea>
-								<Input
-									type="file"
-									accept="image/*"
-									className="hidden"
-									ref={postImageInput}
-									onChange={(ev) => {
-										appendToLoadedImages(ev);
-									}}
-								/>
-								<div className="flex flex-wrap gap-3 mb-2">
-									{postImages &&
-										postImages.map((img, i) => {
-											return (
-												<img
-													src={img.src}
-													key={img.src + i}
-													className="w-20 aspect-square object-cover"
-													onClick={(ev) => {
-														setPostImages((prev) => {
-															return prev.filter((el) => el.id !== img.id);
-														});
-													}}
-												/>
-											);
-										})}
-								</div>
-								<span
-									className="inline-block p-2 border-primary border-2 cursor-pointer"
-									onClick={() => {
-										postImageInput.current.click();
-									}}
-								>
-									<BsImageFill />
-								</span>
-								<Button className="block" onClick={addNewPost}>
-									Publish
-								</Button>
-							</div>
-						)}
+						{myProfile && <PostForm />}
 						{posts && posts.length ? (
 							posts
 								.filter((el, i, self) => {
@@ -477,7 +398,7 @@ function Profile(props) {
 						)}
 					</div>
 				</div>
-				<Footer/>
+				<Footer />
 			</Container>
 		</div>
 	);

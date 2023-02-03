@@ -66,6 +66,10 @@ const friendshipApi = createApi({
             }),
 			invalidatesTags: ["Friends"],
 		}),
+		loadAllFriendRequests:builder.query({
+			query:()=>"loadAllFriendRequests",
+			providesTags:["Friends"]
+		})
 	}),
 });
 export default friendshipApi;
@@ -78,5 +82,6 @@ export const {
     useRemoveFriendRequestMutation,
     useRemoveFriendMutation,
     useDeclineFriendRequestMutation,
-    useAcceptFriendRequestMutation
+    useAcceptFriendRequestMutation,
+	useLoadAllFriendRequestsQuery
 } = friendshipApi;

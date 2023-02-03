@@ -1,27 +1,38 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import PostForm from "../components/PostForm";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../store/userSlice";
-import axios from "axios";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import UserCard from "../components/UserCard";
+import { Container } from "../ui/components";
+import styled from "styled-components";
+import FeedPosts from "../components/FeedPosts";
+import { useState } from "react";
+const ThinContainer = styled(Container)`
+	max-width: 1024px;
+`;
 function Homepage(props) {
 	const dispatch = useDispatch();
-	const userData = useSelector((state) => state.user.user);
-	const apiUrl = useSelector((state) => state.user.apiUrl);
+	const [postDetails, setPostDetails] = useState({
+		show: false,
+		data: null,
+	});
 
 	return (
-		<div>
-			<div>
-				<Link to="/">Homepage</Link>
-				<Link to="/login">Login</Link>
-			</div>
-			<br />
-			<p>{userData.name}</p>
-			<p>Homepage</p>
-			<button
+		<div className="relative">
+			<Navbar />
 
-			>
-				Logout
-			</button>
+			<ThinContainer className="flex  gap-3 max-w-[200px]">
+				<UserCard />
+				<div className="w-[70%]">
+					<PostForm />
+					<FeedPosts
+						setPostDetails={setPostDetails}
+						postDetails={postDetails}
+					/>
+				</div>
+			</ThinContainer>
+			<Footer />
 		</div>
 	);
 }

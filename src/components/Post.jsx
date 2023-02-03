@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import colors from "../ui/colors";
 import moment from "moment";
 import Dropdown from "./Dropdown";
+import { Link, useParams } from "react-router-dom";
 import {
 	AiOutlineLike,
 	AiFillLeftCircle,
@@ -19,6 +20,7 @@ import {
 } from "../store/userApi";
 function Post({ data, allPosts, likes, likeCount, setPostDetails, myProfile }) {
 	const apiUrl = useSelector((state) => state.user.apiUrl);
+	const { id } = useParams();
 	const [currentImageIndex, setCurrentImageIndex] = useState(0);
 	const myImages = allPosts
 		.filter((el) => el.id === data.id)
@@ -61,9 +63,15 @@ function Post({ data, allPosts, likes, likeCount, setPostDetails, myProfile }) {
 					alt=""
 				/>
 				<div className="flex flex-col pt-3 pl-3">
-					<h1 className="font-bold">
-						{data.firstname} {data.lastname}
-					</h1>
+					{id === data.userid ? (
+						<h1 to className="font-bold">
+							{data.firstname} {data.lastname}
+						</h1>
+					) : (
+						<Link to={`/profile/${data.userid}`} className="font-bold">
+							{data.firstname} {data.lastname}
+						</Link>
+					)}
 					<p>{moment(new Date(data.created_at)).fromNow()}</p>
 				</div>
 			</div>
