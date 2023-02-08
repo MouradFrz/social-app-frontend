@@ -1,6 +1,6 @@
 import React from "react";
 
-function Dropdown({ title, list, className, listWidth, emptyMessage }) {
+function Dropdown({ title, list, className, listWidth = "", emptyMessage }) {
 	const displayedList = list.map((el, key) => {
 		return (
 			<li className="hover:bg-primary/40 w-full" key={key}>
@@ -18,7 +18,11 @@ function Dropdown({ title, list, className, listWidth, emptyMessage }) {
 					listWidth || "200px"
 				}] group-hover:block py-2  shadow-xl  right-0 absolute`}
 			>
-				<ul>
+				<ul
+					style={{
+						width: listWidth ? listWidth : "200px",
+					}}
+				>
 					{displayedList.length ? (
 						displayedList
 					) : emptyMessage ? (

@@ -33,7 +33,7 @@ function PostForm(props) {
 		dispatch(userApi.util.invalidateTags(["Posts"]));
 	};
 	return (
-		<div className="p-3 border-4 border-primary mb-2 shadow-lg">
+		<div className="p-3 border-4 rounded-md border-primary mb-2 shadow-lg">
 			<h2>New Post</h2>
 			<textarea
 				value={postText}

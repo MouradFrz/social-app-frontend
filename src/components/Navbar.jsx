@@ -10,6 +10,7 @@ import { logout } from "../store/userSlice";
 import Dropdown from "./Dropdown";
 import { Link } from "react-router-dom";
 import SearchBar from "./SearchBar";
+import MessageList from "./MessageList";
 function Navbar(props) {
 	const userid = useSelector((state) => state.user.user.id);
 	const apiUrl = useSelector((state) => state.user.apiUrl);
@@ -48,12 +49,19 @@ function Navbar(props) {
 
 				{data && (
 					<div className="flex gap-5 items-center">
+						<MessageList/>
 						<RequestsList/>
 						<Dropdown
 							title={
 								<div className="flex gap-4 items-center">
 									<img
-										src={`${apiUrl}profile-images/${data.pfpurl}`}
+										src={
+											data && data.pfpurl
+												? `${apiUrl}profile-images/${
+														data && data.pfpurl
+												  }?t=${new Date().getTime()}`
+												: "/pfp-placeholder.jpg"
+										}
 										alt="profile image"
 										className="w-10 h-10 aspect-square rounded-full"
 									/>
@@ -65,6 +73,7 @@ function Navbar(props) {
 							}
 							list={ActionList}
 							className="relative"
+							
 						></Dropdown>
 					</div>
 				)}

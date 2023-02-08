@@ -28,7 +28,7 @@ const userApi = createApi({
 				method: "POST",
 				body: data,
 			}),
-			invalidatesTags: ["Posts"],
+			invalidatesTags: ["Posts","Feeds"],
 		}),
 		loadUserPosts: builder.query({
 			query: ({ id, page }) => ({

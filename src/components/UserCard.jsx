@@ -7,7 +7,7 @@ function UserCard(props) {
 	const { data, isFetching, error } = useUserDataQuery(userData.id);
 	const { data: stats } = useGetUserStatsQuery(userData.id);
 	return (
-		<div className="w-[30%] h-fit flex flex-col sticky top-[75px] items-center p-3 border-4 border-primary mb-2 shadow-lg">
+		<div className="w-[30%] h-fit flex rounded-md flex-col sticky top-[75px] items-center p-3 border-4 border-primary mb-2 shadow-lg">
 			<img
 				src={
 					data && data.pfpurl
@@ -17,7 +17,7 @@ function UserCard(props) {
 						: "/pfp-placeholder.jpg"
 				}
 				alt="profile picture"
-				className="md:w-[50%] w-full rounded-md"
+				className="md:w-[50%] w-full rounded-full aspect-square object-cover"
 			/>
 			<p className="text-2xl font-semibold mt-2 text-center ">
 				{data && data.firstname} {data && data.lastname}
