@@ -329,8 +329,8 @@ function Profile(props) {
 								<Button
 									onClick={() => {
 										const fd = new FormData();
-										fd.append("token",token)
-										fd.append("profileId",profileId)
+										fd.append("token", token);
+										fd.append("profileId", profileId);
 										removeFriendRequest(fd);
 									}}
 								>
@@ -342,9 +342,9 @@ function Profile(props) {
 								<Button
 									onClick={() => {
 										const fd = new FormData();
-										fd.append("token",token)
-										fd.append("profileId",profileId)
-										acceptFriendRequest(fd);
+										fd.append("token", token);
+										fd.append("profileId", profileId);
+										acceptFriendRequest(fd);s
 									}}
 								>
 									Accept Friend Request
@@ -352,8 +352,8 @@ function Profile(props) {
 								<Button
 									onClick={() => {
 										const fd = new FormData();
-										fd.append("token",token)
-										fd.append("profileId",profileId)
+										fd.append("token", token);
+										fd.append("profileId", profileId);
 										declineFriendRequest(fd);
 									}}
 								>
@@ -365,8 +365,8 @@ function Profile(props) {
 								<Button
 									onClick={() => {
 										const fd = new FormData();
-										fd.append("profileId",profileId)
-										fd.append("token",token)
+										fd.append("profileId", profileId);
+										fd.append("token", token);
 										sendFriendRequest(fd);
 									}}
 								>

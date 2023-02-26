@@ -7,6 +7,7 @@ import {
 } from "../store/friendshipApi";
 const FriendRequest = ({ data }) => {
 	const apiUrl = useSelector((state) => state.user.apiUrl);
+	const token = useSelector((state) => state.user.user.token);
 	const [declineFriendRequest] = useDeclineFriendRequestMutation();
 	const [acceptFriendRequest] = useAcceptFriendRequestMutation();
 	return (
@@ -29,7 +30,10 @@ const FriendRequest = ({ data }) => {
 				<div>
 					<button
 						onClick={() => {
-							acceptFriendRequest(data.id);
+							const fd = new FormData();
+							fd.append("profileId", data.id);
+							fd.append("token", token);
+							acceptFriendRequest(fd);
 						}}
 						className="bg-primary px-2 rounded-sm mr-3"
 					>
@@ -37,7 +41,10 @@ const FriendRequest = ({ data }) => {
 					</button>
 					<button
 						onClick={() => {
-							declineFriendRequest(data.id);
+							const fd = new FormData();
+							fd.append("profileId", data.id);
+							fd.append("token", token);
+							declineFriendRequest(fd);
 						}}
 						className="bg-gray-400 px-2 rounded-sm"
 					>
