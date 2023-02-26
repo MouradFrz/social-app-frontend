@@ -45,7 +45,7 @@ function Register(props) {
 		setError("");
 		setSuccess(false);
 		setLoading(true);
-		fetch(`${apiUrl}register`, { body: data, method: "POST" })
+		fetch(`${apiUrl}register`, { body: JSON.stringify(data), method: "POST" })
 			.then((res) => res.json())
 			.then((res) => {
 				setSuccess(true);
