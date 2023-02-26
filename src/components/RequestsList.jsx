@@ -3,9 +3,11 @@ import React from "react";
 import { FaUserFriends } from "react-icons/fa";
 import { useLoadAllFriendRequestsQuery } from "../store/friendshipApi";
 import Dropdown from "./Dropdown";
+import { useSelector } from "react-redux";
 import FriendRequest from "./FriendRequest";
 function RequestsList(props) {
-	const { data: requests } = useLoadAllFriendRequestsQuery();
+	const token = useSelector((state) => state.user.user.token);
+	const { data: requests } = useLoadAllFriendRequestsQuery({ token });
 
 	const ActionList = requests
 		? requests.map((el) => ({
@@ -27,7 +29,7 @@ function RequestsList(props) {
 			className="relative"
 			list={ActionList}
 			listWidth={"400px"}
-            emptyMessage={"No friend requests!"}
+			emptyMessage={"No friend requests!"}
 		></Dropdown>
 	);
 }

@@ -50,6 +50,7 @@ const schema = yup.object().shape({
 	bio: yup.string().max(200),
 });
 function Profile(props) {
+	const token = useSelector((state) => state.user.user.token);
 	//Getting url params
 	const { profileId } = useParams();
 	//States
@@ -67,35 +68,36 @@ function Profile(props) {
 	const [declineFriendRequest] = useDeclineFriendRequestMutation();
 	const [acceptFriendRequest] = useAcceptFriendRequestMutation();
 	const [updateUser] = useUpdateUserMutation();
+
 	//Data fetching
 	const { data: friends } = useLoadFriendsQuery(profileId);
-	const { data: loggedInFriendList } = useUserFriendListQuery();
-	const { data: sentRequests } = useSentRequestsQuery();
-	const { data: receivedRequests } = useReceivedRequestsQuery();
+	const { data: loggedInFriendList } = useUserFriendListQuery(token);
+	const { data: sentRequests } = useSentRequestsQuery(token);
+	const { data: receivedRequests } = useReceivedRequestsQuery(token);
 	const { data, isLoading, error } = useUserDataQuery(profileId);
-
 	const [reloadPosts, { data: posts }] = useLazyLoadUserPostsQuery();
+	const user = useSelector((state) => state.user.user);
 	const {
 		data: likes,
 		isLoading: likesLoading,
 		error: likesError,
-	} = useLoadLikesQuery(
-		posts
+	} = useLoadLikesQuery({
+		idList: posts
 			?.map((el) => el.id)
 			.filter(
 				(item, index) => posts?.map((el) => el.id).indexOf(item) === index
-			)
-	);
-	const { data: userLikes } = useUserLikesQuery();
+			),
+		token,
+	});
+	const { data: userLikes } = useUserLikesQuery({ token });
 	/////////Others
-	const user = useSelector((state) => state.user.user);
-	axios.defaults.headers.common["Authorization"] = `Bearer ${user.token}`;
+
+	// axios.defaults.headers.common["Authorization"] = `Bearer ${user.token}`;
 	const dispatch = useDispatch();
 
 	const myProfile = useMemo(() => {
-		return user.id === parseInt(profileId);
+		return user.id === profileId;
 	}, [user.id, profileId]);
-
 	//Refs
 	const editFormRef = useRef(null);
 	const profileInput = useRef(null);
@@ -150,25 +152,38 @@ function Profile(props) {
 	const switchPic = () => {
 		const fd = new FormData();
 		fd.append("image", profileInput.current.files[0]);
-		axios.post(`${apiUrl}uploadPicture`, fd).then((res) => {
-			dispatch(userApi.util.invalidateTags(["Profile"]));
-		});
+		fd.append("token", token);
+		fetch(`${apiUrl}uploadPicture`, {
+			body: fd,
+			method: "POST",
+		})
+			.then((res) => res.json())
+			.then((res) => {
+				dispatch(userApi.util.invalidateTags(["Profile"]));
+			});
 	};
 	const switchBanner = () => {
 		const fd = new FormData();
 		fd.append("image", bannerInput.current.files[0]);
-		axios.post(`${apiUrl}uploadBanner`, fd).then((res) => {
-			dispatch(userApi.util.invalidateTags(["Profile"]));
-		});
+		fd.append("token", token);
+		fetch(`${apiUrl}uploadBanner`, {
+			body: fd,
+			method: "POST",
+		})
+			.then((res) => res.json())
+			.then((res) => {
+				dispatch(userApi.util.invalidateTags(["Profile"]));
+			});
 	};
 
 	const submitEditProfile = (data) => {
-		updateUser({
-			firstname: data.firstName,
-			lastname: data.lastName,
-			email: data.email,
-			bio: data.bio,
-		}).then((res) => {
+		const fd = new FormData();
+		fd.append("firstname", data.firstName);
+		fd.append("lastname", data.lastName);
+		fd.append("email", data.email);
+		fd.append("bio", data.bio);
+		fd.append("token", token);
+		updateUser(fd).then((res) => {
 			if (res.data.success) {
 				setModal(false);
 			}
@@ -295,41 +310,51 @@ function Profile(props) {
 							>
 								Edit profile
 							</Button>
-						) : loggedInFriendList &&
-						  loggedInFriendList.includes(parseInt(profileId)) ? (
+						) : loggedInFriendList && loggedInFriendList.includes(profileId) ? (
 							<div className="flex gap-2">
 								<Button
 									onClick={() => {
-										removeFriend(profileId);
+										const fd = new FormData();
+										fd.append("profileId", profileId);
+										fd.append("token", token);
+										removeFriend(fd);
 									}}
 								>
 									Remove Friend
 								</Button>
 								<Button>Messages</Button>
 							</div>
-						) : sentRequests && sentRequests.includes(parseInt(profileId)) ? (
+						) : sentRequests && sentRequests.includes(profileId) ? (
 							<div className="flex gap-2">
 								<Button
 									onClick={() => {
-										removeFriendRequest(profileId);
+										const fd = new FormData();
+										fd.append("token",token)
+										fd.append("profileId",profileId)
+										removeFriendRequest(fd);
 									}}
 								>
 									Remove Friend Request
 								</Button>
 							</div>
-						) : receivedRequests &&
-						  receivedRequests.includes(parseInt(profileId)) ? (
+						) : receivedRequests && receivedRequests.includes(profileId) ? (
 							<div className="flex gap-2">
 								<Button
 									onClick={() => {
-										acceptFriendRequest(profileId);
+										const fd = new FormData();
+										fd.append("token",token)
+										fd.append("profileId",profileId)
+										acceptFriendRequest(fd);
 									}}
 								>
 									Accept Friend Request
 								</Button>
 								<Button
 									onClick={() => {
-										declineFriendRequest(profileId);
+										const fd = new FormData();
+										fd.append("token",token)
+										fd.append("profileId",profileId)
+										declineFriendRequest(fd);
 									}}
 								>
 									Decline Friend Request
@@ -339,7 +364,10 @@ function Profile(props) {
 							<div className="flex gap-2">
 								<Button
 									onClick={() => {
-										sendFriendRequest(profileId);
+										const fd = new FormData();
+										fd.append("profileId",profileId)
+										fd.append("token",token)
+										sendFriendRequest(fd);
 									}}
 								>
 									Add

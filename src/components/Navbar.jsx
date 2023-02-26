@@ -3,7 +3,7 @@ import { Container, Input } from "../ui/components";
 import { useUserDataQuery } from "../store/userApi";
 import { useSelector, useDispatch } from "react-redux";
 import { IoMdArrowDropdown } from "react-icons/io";
-import RequestsList from './RequestsList'
+import RequestsList from "./RequestsList";
 import { FiLogOut } from "react-icons/fi";
 import { ImProfile } from "react-icons/im";
 import { logout } from "../store/userSlice";
@@ -49,8 +49,8 @@ function Navbar(props) {
 
 				{data && (
 					<div className="flex gap-5 items-center">
-						<MessageList/>
-						<RequestsList/>
+						<MessageList />
+						<RequestsList />
 						<Dropdown
 							title={
 								<div className="flex gap-4 items-center">
@@ -73,7 +73,6 @@ function Navbar(props) {
 							}
 							list={ActionList}
 							className="relative"
-							
 						></Dropdown>
 					</div>
 				)}

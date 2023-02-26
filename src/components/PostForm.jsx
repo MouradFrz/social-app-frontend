@@ -4,9 +4,10 @@ import { Input, Button } from "../ui/components";
 import { nanoid } from "@reduxjs/toolkit";
 import { useCreatePostMutation } from "../store/userApi";
 import userApi from "../store/userApi";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 function PostForm(props) {
-    const dispatch = useDispatch()
+	const dispatch = useDispatch();
+	const token = useSelector((state) => state.user.user.token);
 	const postImageInput = useRef(null);
 	const [postText, setPostText] = useState("");
 	const [postImages, setPostImages] = useState([]);
@@ -27,6 +28,7 @@ function PostForm(props) {
 		for (let i = 0; i <= postImages.length - 1; i++) {
 			fd.append("images[]", postImages[i].object);
 		}
+		fd.append("token", token);
 		createUser(fd);
 		setPostImages([]);
 		setPostText("");

@@ -10,25 +10,28 @@ import {
 } from "../store/userApi";
 import { useRef } from "react";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 function FeedPosts({ setPostDetails, postDetails }) {
 	const [loadingMore, setLoadingMore] = useState(false);
 	const [page, setPage] = useState(1);
 	const postsContainer = useRef(null);
+	const token = useSelector((state) => state.user.user.token);
 	const [reloadPosts, { data: posts }] = useLazyLoadFeedQuery();
-	const { data: userLikes } = useUserLikesQuery();
+	const { data: userLikes } = useUserLikesQuery({token});
 	const {
 		data: likes,
 		isLoading: likesLoading,
 		error: likesError,
-	} = useLoadLikesQuery(
-		posts
+	} = useLoadLikesQuery({
+		idList: posts
 			?.map((el) => el.id)
 			.filter(
 				(item, index) => posts?.map((el) => el.id).indexOf(item) === index
-			)
-	);
+			),
+		token,
+	});
 	useEffect(() => {
-		reloadPosts({ id: 1, page });
+		reloadPosts({ token, page });
 	}, []);
 	useEffect(() => {
 		const onScroll = () => {
@@ -47,7 +50,7 @@ function FeedPosts({ setPostDetails, postDetails }) {
 	useEffect(() => {
 		const oldPostsLength = posts?.length;
 		if (loadingMore) {
-			reloadPosts({ id: 1, page: page + 1 }).then((res) => {
+			reloadPosts({ token, page: page + 1 }).then((res) => {
 				if (res.data.length !== oldPostsLength) setPage((prev) => prev + 1);
 			});
 		}

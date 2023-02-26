@@ -21,27 +21,28 @@ import { useMemo } from "react";
 import { useState } from "react";
 import { ref } from "yup";
 function Messages(props) {
+	const token = useSelector((state) => state.user.user.token);
 	const { convoid } = useParams();
-	const { data: messages } = useLoadAllConversationsQuery();
-	const { data: emptyConvos } = useLoadEmptyConvosQuery();
+	const { data: messages } = useLoadAllConversationsQuery({ token });
+	const { data: emptyConvos } = useLoadEmptyConvosQuery({ token });
 	const [sendMessage] = useSendMessageMutation();
 	const { data: conversationMessages } = useLoadMessagesQuery(convoid);
 
-	const { data: contactInfo } = useLoadConvoContactQuery(convoid);
+	const { data: contactInfo } = useLoadConvoContactQuery({ convoid, token });
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const messageInputRef = useRef(null);
 	const messagesContainer = useRef(null);
 	const [refresh, setRefresh] = useState(false);
 	const userId = useSelector((state) => state.user.user.id);
-	const token = useSelector((state) => state.user.user.token);
+
 	const apiUrl = useSelector((state) => state.user.apiUrl);
-	axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 	const sendMessageFunction = () => {
-		sendMessage({
-			convoid,
-			text: messageInputRef.current.value,
-		});
+		const fd = new FormData();
+		fd.append("convoid", convoid);
+		fd.append("text", messageInputRef.current.value);
+		fd.append("token", token);
+		sendMessage(fd);
 		messageInputRef.current.value = "";
 	};
 	useEffect(() => {
@@ -59,11 +60,12 @@ function Messages(props) {
 		};
 	}, [refresh]);
 	useEffect(() => {
-		axios
-			.get(`http://localhost:3000/canAccessConvo?convoid=${convoid}`)
-			.then(({ data }) => {
+		fetch(
+			`https://mouradyaouscandiweb.000webhostapp.com/canAccessConvo?convoid=${convoid}&token=${token}`
+		)
+			.then((res) => res.json())
+			.then((data) => {
 				if (!data) {
-					console.log("cant access");
 					navigate("/");
 				}
 			})
@@ -81,7 +83,7 @@ function Messages(props) {
 			cluster: "eu",
 			encrypted: true,
 			channelAuthorization: {
-				endpoint: "http://localhost:3000/pusher-auth",
+				endpoint: "https://mouradyaouscandiweb.000webhostapp.com/pusher-auth",
 				headers: { Authorization: `Bearer ${token}` },
 			},
 		});
@@ -134,7 +136,6 @@ function Messages(props) {
 								{contactInfo &&
 									`${contactInfo.firstname} ${contactInfo.lastname}`}
 							</h1>
-						
 						</div>
 					</div>
 					<div

@@ -15,6 +15,7 @@ import {
 	AiFillLike,
 	AiFillRightCircle,
 } from "react-icons/ai";
+import { useEffect } from "react";
 
 function PostDetails({
 	postDetails,
@@ -24,6 +25,7 @@ function PostDetails({
 	allPosts,
 }) {
 	const apiUrl = useSelector((state) => state.user.apiUrl);
+	const token = useSelector((state) => state.user.user.token);
 	const [likePost] = useLikePostMutation();
 	const [unlikePost] = useUnlikePostMutation();
 	const [uploadComment] = useUploadCommentMutation();
@@ -32,6 +34,9 @@ function PostDetails({
 	const { data, isLoading, error } = useLoadCommentsQuery(
 		postDetails?.data?.id ? postDetails?.data?.id : 0
 	);
+	useEffect(()=>{
+		setCurrentImageIndex(0)
+	},[postDetails.show])
 	return (
 		<div
 			className={`bg-black/30 ${
@@ -136,16 +141,20 @@ function PostDetails({
 									<button
 										className="flex gap-1 items-center"
 										onClick={() => {
-											likePost({
-												postId: postDetails.data.id,
-												posts: allPosts
+											const fd = new FormData();
+											fd.append("postId", postDetails.data.id);
+											fd.append(
+												"posts",
+												allPosts
 													?.map((el) => el.id)
 													.filter(
 														(item, index) =>
 															allPosts?.map((el) => el.id).indexOf(item) ===
 															index
-													),
-											});
+													)
+											);
+											fd.append("token", token);
+											likePost(fd);
 										}}
 									>
 										<AiOutlineLike /> <p>Like</p>{" "}
@@ -154,16 +163,20 @@ function PostDetails({
 									<button
 										className="flex gap-1 items-center"
 										onClick={() => {
-											unlikePost({
-												postId: postDetails.data.id,
-												posts: allPosts
+											const fd = new FormData();
+											fd.append("postId", postDetails.data.id);
+											fd.append(
+												"posts",
+												allPosts
 													?.map((el) => el.id)
 													.filter(
 														(item, index) =>
 															allPosts?.map((el) => el.id).indexOf(item) ===
 															index
-													),
-											});
+													)
+											);
+											fd.append("token", token);
+											unlikePost(fd);
 										}}
 									>
 										<AiFillLike /> <p>Unlike</p>{" "}
@@ -183,10 +196,11 @@ function PostDetails({
 							></textarea>
 							<Button
 								onClick={() => {
-									uploadComment({
-										text: commentText,
-										postid: postDetails.data.id,
-									});
+									const fd = new FormData();
+									fd.append("text", commentText);
+									fd.append("postid", postDetails.data.id);
+									fd.append("token", token);
+									uploadComment(fd);
 									setCommentText("");
 								}}
 							>

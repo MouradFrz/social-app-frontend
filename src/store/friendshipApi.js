@@ -2,11 +2,11 @@ import { fetchBaseQuery, createApi } from "@reduxjs/toolkit/query/react";
 const friendshipApi = createApi({
 	reducerPath: "friendshipApi",
 	baseQuery: fetchBaseQuery({
-		baseUrl: "http://localhost:3000",
-		prepareHeaders: (headers, { getState }) => {
-			headers.set("Authorization", `Bearer ${getState().user.user.token}`);
-			return headers;
-		},
+		baseUrl: "https://mouradyaouscandiweb.000webhostapp.com",
+		// prepareHeaders: (headers, { getState }) => {
+		// 	headers.set("Authorization", `Bearer ${getState().user.user.token}`);
+		// 	return headers;
+		// },
 	}),
 	tagTypes: ["Friends"],
 	endpoints: (builder) => ({
@@ -15,61 +15,61 @@ const friendshipApi = createApi({
 			providesTags: ["Friends"],
 		}),
 		userFriendList: builder.query({
-			query: () => `userLoadFriends`,
-            providesTags: ["Friends"],
+			query: (token) => `userLoadFriends?token=${token}`,
+			providesTags: ["Friends"],
 		}),
 		sentRequests: builder.query({
-			query: () => `sentRequests`,
+			query: (token) => `sentRequests?token=${token}`,
 			providesTags: ["Friends"],
 		}),
 		receivedRequests: builder.query({
-			query: () => `receivedRequests`,
+			query: (token) => `receivedRequests?token=${token}`,
 			providesTags: ["Friends"],
 		}),
-        sendFriendRequest: builder.mutation({
+		sendFriendRequest: builder.mutation({
 			query: (data) => ({
-                url:"sendFriendRequest",
-                method:"POST",
-                body:data
-            }),
+				url: "sendFriendRequest",
+				method: "POST",
+				body: data,
+			}),
 			invalidatesTags: ["Friends"],
 		}),
-        removeFriendRequest: builder.mutation({
+		removeFriendRequest: builder.mutation({
 			query: (data) => ({
-                url:"removeFriendRequest",
-                method:"POST",
-                body:data
-            }),
+				url: "removeFriendRequest",
+				method: "POST",
+				body: data,
+			}),
 			invalidatesTags: ["Friends"],
 		}),
-        removeFriend: builder.mutation({
+		removeFriend: builder.mutation({
 			query: (data) => ({
-                url:"removeFriend",
-                method:"POST",
-                body:data
-            }),
+				url: "removeFriend",
+				method: "POST",
+				body: data,
+			}),
 			invalidatesTags: ["Friends"],
 		}),
-        declineFriendRequest: builder.mutation({
+		declineFriendRequest: builder.mutation({
 			query: (data) => ({
-                url:"declineFriendRequest",
-                method:"POST",
-                body:data
-            }),
+				url: "declineFriendRequest",
+				method: "POST",
+				body: data,
+			}),
 			invalidatesTags: ["Friends"],
 		}),
-        acceptFriendRequest: builder.mutation({
+		acceptFriendRequest: builder.mutation({
 			query: (data) => ({
-                url:"acceptFriendRequest",
-                method:"POST",
-                body:data
-            }),
+				url: "acceptFriendRequest",
+				method: "POST",
+				body: data,
+			}),
 			invalidatesTags: ["Friends"],
 		}),
-		loadAllFriendRequests:builder.query({
-			query:()=>"loadAllFriendRequests",
-			providesTags:["Friends"]
-		})
+		loadAllFriendRequests: builder.query({
+			query: ({ token }) => `loadAllFriendRequests?token=${token}`,
+			providesTags: ["Friends"],
+		}),
 	}),
 });
 export default friendshipApi;
@@ -78,10 +78,10 @@ export const {
 	useUserFriendListQuery,
 	useSentRequestsQuery,
 	useReceivedRequestsQuery,
-    useSendFriendRequestMutation,
-    useRemoveFriendRequestMutation,
-    useRemoveFriendMutation,
-    useDeclineFriendRequestMutation,
-    useAcceptFriendRequestMutation,
-	useLoadAllFriendRequestsQuery
+	useSendFriendRequestMutation,
+	useRemoveFriendRequestMutation,
+	useRemoveFriendMutation,
+	useDeclineFriendRequestMutation,
+	useAcceptFriendRequestMutation,
+	useLoadAllFriendRequestsQuery,
 } = friendshipApi;

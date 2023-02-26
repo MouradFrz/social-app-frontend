@@ -9,10 +9,12 @@ import styled from "styled-components";
 import FeedPosts from "../components/FeedPosts";
 import { useState } from "react";
 import axios from "axios";
+import { useEffect } from "react";
 const ThinContainer = styled(Container)`
 	max-width: 1024px;
 `;
 function Homepage(props) {
+	const token = useSelector((state) => state.user.user.token);
 	const dispatch = useDispatch();
 	const [postDetails, setPostDetails] = useState({
 		show: false,

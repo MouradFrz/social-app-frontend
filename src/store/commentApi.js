@@ -2,11 +2,11 @@ import { fetchBaseQuery, createApi } from "@reduxjs/toolkit/query/react";
 const commentApi = createApi({
 	reducerPath: "commentApi",
 	baseQuery: fetchBaseQuery({
-		baseUrl: "http://localhost:3000",
-		prepareHeaders: (headers, { getState }) => {
-			headers.set("Authorization", `Bearer ${getState().user.user.token}`);
-			return headers;
-		},
+		baseUrl: "https://mouradyaouscandiweb.000webhostapp.com",
+		// prepareHeaders: (headers, { getState }) => {
+		// 	headers.set("Authorization", `Bearer ${getState().user.user.token}`);
+		// 	return headers;
+		// },
 		tagTypes: ["Comments"],
 	}),
 	endpoints: (builder) => ({

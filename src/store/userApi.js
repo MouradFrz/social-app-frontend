@@ -2,13 +2,9 @@ import { fetchBaseQuery, createApi } from "@reduxjs/toolkit/query/react";
 const userApi = createApi({
 	reducerPath: "userApi",
 	baseQuery: fetchBaseQuery({
-		baseUrl: "http://localhost:3000",
-		prepareHeaders: (headers, { getState }) => {
-			headers.set("Authorization", `Bearer ${getState().user.user.token}`);
-			return headers;
-		},
+		baseUrl: "https://mouradyaouscandiweb.000webhostapp.com",
 	}),
-	tagTypes: ["Profile", "Posts", "UserLikes", "Search","Feeds"],
+	tagTypes: ["Profile", "Posts", "UserLikes", "Search", "Feeds"],
 	endpoints: (builder) => ({
 		userData: builder.query({
 			query: (id) => `/userdata?id=${id}`,
@@ -17,7 +13,7 @@ const userApi = createApi({
 		updateUser: builder.mutation({
 			query: (data) => ({
 				url: `/updateUser`,
-				method: "PATCH",
+				method: "POST",
 				body: data,
 			}),
 			invalidatesTags: ["Profile"],
@@ -28,7 +24,7 @@ const userApi = createApi({
 				method: "POST",
 				body: data,
 			}),
-			invalidatesTags: ["Posts","Feeds"],
+			invalidatesTags: ["Posts", "Feeds"],
 		}),
 		loadUserPosts: builder.query({
 			query: ({ id, page }) => ({
@@ -50,26 +46,26 @@ const userApi = createApi({
 			providesTags: ["Posts"],
 		}),
 		deletePost: builder.mutation({
-			query: (postId) => ({
+			query: (data) => ({
 				url: `/deletePost`,
 				method: "POST",
-				body: { postId },
+				body: data,
 			}),
 			invalidatesTags: ["Posts"],
 		}),
 		userLikes: builder.query({
-			query: () => "/getUserLikes",
+			query: ({ token }) => `/getUserLikes?token=${token}`,
 			providesTags: ["UserLikes"],
 		}),
 		loadLikes: builder.query({
-			query: (idList) => `/loadLikes?list=${idList}`,
+			query: ({ idList, token }) => `/loadLikes?list=${idList}&token=${token}`,
 			providesTags: ["UserLikes"],
 		}),
 		likePost: builder.mutation({
-			query: ({ postId }) => ({
+			query: (data) => ({
 				url: "/likePost",
 				method: "POST",
-				body: { postId },
+				body: data,
 			}),
 			invalidatesTags: ["UserLikes"],
 			onQueryStarted({ postId, posts }, { dispatch, queryFulfilled }) {
@@ -91,10 +87,10 @@ const userApi = createApi({
 			},
 		}),
 		unlikePost: builder.mutation({
-			query: ({ postId }) => ({
+			query: (data) => ({
 				url: "/unlikePost",
 				method: "POST",
-				body: { postId },
+				body: data,
 			}),
 			invalidatesTags: ["UserLikes"],
 			onQueryStarted({ postId, posts }, { dispatch, queryFulfilled }) {
@@ -120,14 +116,14 @@ const userApi = createApi({
 			query: (keyword) => `/searchUsers?keyword=${keyword}`,
 			providesTags: ["Search"],
 		}),
-		getUserStats:builder.query({
-			query:(id)=>`/getUserStats?id=${id}`,
-			providesTags:["Profile"]
+		getUserStats: builder.query({
+			query: (id) => `/getUserStats?id=${id}`,
+			providesTags: ["Profile"],
 		}),
-		loadFeed:builder.query({
-			query:({page})=>`/loadFeed?page=${page}`,
-			providesTags:["Feeds"]
-		})
+		loadFeed: builder.query({
+			query: ({ page, token }) => `/loadFeed?page=${page}&token=${token}`,
+			providesTags: ["Feeds"],
+		}),
 	}),
 });
 export default userApi;
@@ -144,5 +140,5 @@ export const {
 	useLikePostMutation,
 	useUnlikePostMutation,
 	useLoadLikesQuery,
-	useGetUserStatsQuery
+	useGetUserStatsQuery,
 } = userApi;

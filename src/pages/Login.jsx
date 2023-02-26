@@ -28,17 +28,20 @@ function Login(props) {
 	const dispatch = useDispatch();
 	function sendLogin(loginData) {
 		setLoading(true);
-		axios
-			.post("http://localhost:3000/login", loginData)
+		fetch("https://mouradyaouscandiweb.000webhostapp.com/login", {
+			method: "POST",
+			body: JSON.stringify(loginData),
+		})
+			.then((res) => res.json())
 			.then((res) => {
-				if (res.data.token) {
+				if (res.token) {
 					dispatch(
 						updateUser(
-							res.data.user.id,
-							res.data.user.firstName,
-							res.data.user.lastName,
-							res.data.user.email,
-							res.data.token
+							res.user.id,
+							res.user.firstName,
+							res.user.lastName,
+							res.user.email,
+							res.token
 						)
 					);
 				} else {
@@ -46,7 +49,7 @@ function Login(props) {
 				}
 			})
 			.finally(() => {
-				setLoading(false)
+				setLoading(false);
 			});
 	}
 	function resetError() {

@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = localStorage.getItem("userData")
 	? JSON.parse(localStorage.getItem("userData"))
 	: {	
-			apiUrl:"http://localhost:3000/",
+			apiUrl:"https://mouradyaouscandiweb.000webhostapp.com/",
 			user: {
 				token: "",
 			},
@@ -14,7 +14,7 @@ const userSlice = createSlice({
 	reducers: {
 		updateUser: {
 			reducer: (state, { payload }) => {
-				state.apiUrl="http://localhost:3000/";
+				state.apiUrl="https://mouradyaouscandiweb.000webhostapp.com/";
 				state.user = payload;
 				localStorage.setItem("userData", JSON.stringify(state));
 			},

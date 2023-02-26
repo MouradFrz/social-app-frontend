@@ -20,6 +20,7 @@ import {
 } from "../store/userApi";
 function Post({ data, allPosts, likes, likeCount, setPostDetails, myProfile }) {
 	const apiUrl = useSelector((state) => state.user.apiUrl);
+	const token = useSelector((state) => state.user.user.token);
 	const { id } = useParams();
 	const [currentImageIndex, setCurrentImageIndex] = useState(0);
 	const myImages = allPosts
@@ -37,7 +38,10 @@ function Post({ data, allPosts, likes, likeCount, setPostDetails, myProfile }) {
 				</span>
 			),
 			onClick: () => {
-				deletePost(data.id);
+				const fd = new FormData();
+				fd.append("postId",data.id)
+				fd.append("token",token)
+				deletePost(fd);
 			},
 		},
 	];
@@ -64,7 +68,7 @@ function Post({ data, allPosts, likes, likeCount, setPostDetails, myProfile }) {
 				/>
 				<div className="flex flex-col pt-3 pl-3">
 					{id === data.userid ? (
-						<h1 to className="font-bold">
+						<h1 className="font-bold">
 							{data.firstname} {data.lastname}
 						</h1>
 					) : (
@@ -85,7 +89,7 @@ function Post({ data, allPosts, likes, likeCount, setPostDetails, myProfile }) {
 					</span>
 					<img
 						className="w-full max-h-[1000px]  object-cover"
-						src={`${apiUrl}/post-images/${myImages[currentImageIndex]}`}
+						src={`${apiUrl}post-images/${myImages[currentImageIndex]}`}
 						alt=""
 						onClick={() => {
 							setPostDetails({
@@ -130,15 +134,19 @@ function Post({ data, allPosts, likes, likeCount, setPostDetails, myProfile }) {
 						<button
 							className="flex gap-1 items-center"
 							onClick={() => {
-								likePost({
-									postId: data.id,
-									posts: allPosts
+								const fd = new FormData();
+								fd.append("postId", data.id);
+								fd.append(
+									"posts",
+									allPosts
 										?.map((el) => el.id)
 										.filter(
 											(item, index) =>
 												allPosts?.map((el) => el.id).indexOf(item) === index
-										),
-								});
+										)
+								);
+								fd.append("token", token);
+								likePost(fd);
 							}}
 						>
 							<AiOutlineLike /> <p>Like</p>{" "}
@@ -147,15 +155,19 @@ function Post({ data, allPosts, likes, likeCount, setPostDetails, myProfile }) {
 						<button
 							className="flex gap-1 items-center"
 							onClick={() => {
-								unlikePost({
-									postId: data.id,
-									posts: allPosts
+								const fd = new FormData();
+								fd.append("postId", data.id);
+								fd.append(
+									"posts",
+									allPosts
 										?.map((el) => el.id)
 										.filter(
 											(item, index) =>
 												allPosts?.map((el) => el.id).indexOf(item) === index
-										),
-								});
+										)
+								);
+								fd.append("token", token);
+								unlikePost(fd);
 							}}
 						>
 							<AiFillLike /> <p>Unlike</p>{" "}
