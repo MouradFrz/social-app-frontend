@@ -42,18 +42,18 @@ function Register(props) {
 		resolver: yupResolver(schema),
 	});
 	const submitRegister = (data) => {
-		setError("")
-		setSuccess(false)
+		setError("");
+		setSuccess(false);
 		setLoading(true);
-		axios
-			.post(`${apiUrl}register`, data)
+		fetch(`${apiUrl}register`, { body: data, method: "POST" })
+			.then((res) => res.json())
 			.then((res) => {
-                setSuccess(true)
-            })
+				setSuccess(true);
+			})
 			.catch((res) => {
-				console.log(res)
-                setError(res.response.data.message)
-            })
+				console.log(res);
+				setError(res.response.data.message);
+			})
 			.finally((res) => {
 				setLoading(false);
 			});
@@ -80,16 +80,26 @@ function Register(props) {
 							height: "100%",
 							top: 0,
 							left: 0,
-                            backdropFilter:"blur(1px)",
-                            zIndex: `${loading ? "0" : "-1"}`
+							backdropFilter: "blur(1px)",
+							zIndex: `${loading ? "0" : "-1"}`,
 						}}
 					></div>
 					<h1 style={{ marginBottom: "30px" }}>Register</h1>
 					{error && (
-						<p style={{ color: "red",fontWeight:"bold",marginBottom:"20px" }}>{error}</p>
+						<p
+							style={{ color: "red", fontWeight: "bold", marginBottom: "20px" }}
+						>
+							{error}
+						</p>
 					)}
 					{succes && (
-						<p style={{ color: "green",fontWeight:"bold",marginBottom:"20px" }}>
+						<p
+							style={{
+								color: "green",
+								fontWeight: "bold",
+								marginBottom: "20px",
+							}}
+						>
 							Successfully registered. You can log in.
 						</p>
 					)}
